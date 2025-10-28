@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/zen-flo/url-shortener/internal/db"
+	"github.com/zen-flo/url-shortener/internal/handler"
+	"github.com/zen-flo/url-shortener/internal/service"
 	"net/http"
 )
 
@@ -21,6 +23,11 @@ func main() {
 			fmt.Printf("Error closing database: %v\n", err)
 		}
 	}()
+
+	// Initialize service and handler
+	urlService := service.NewURLService(database)
+	urlHandler := handler.NewURLHandler(urlService)
+	urlHandler.RegisterRoutes(r)
 
 	// Test route to check if the server is running
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
