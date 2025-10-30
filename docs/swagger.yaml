@@ -40,7 +40,7 @@ paths:
       - application/json
       responses:
         "201":
-          description: Created
+          description: Successfully created
           schema:
             $ref: '#/definitions/github_com_zen-flo_url-shortener_internal_model.URL'
         "400":
@@ -59,6 +59,7 @@ paths:
       description: Remove a short URL by its code
       parameters:
       - description: Short code
+        example: '"abc123"'
         in: path
         name: short
         required: true
@@ -79,6 +80,7 @@ paths:
       description: Retrieve the original URL by short code
       parameters:
       - description: Short code
+        example: '"abc123"'
         in: path
         name: short
         required: true
@@ -87,7 +89,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Original URL retrieved successfully
           schema:
             $ref: '#/definitions/github_com_zen-flo_url-shortener_internal_model.URL'
         "404":

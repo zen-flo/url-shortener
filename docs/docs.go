@@ -44,7 +44,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Successfully created",
                         "schema": {
                             "$ref": "#/definitions/github_com_zen-flo_url-shortener_internal_model.URL"
                         }
@@ -77,6 +77,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "\"abc123\"",
                         "description": "Short code",
                         "name": "short",
                         "in": "path",
@@ -85,7 +86,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Original URL retrieved successfully",
                         "schema": {
                             "$ref": "#/definitions/github_com_zen-flo_url-shortener_internal_model.URL"
                         }
@@ -107,6 +108,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "\"abc123\"",
                         "description": "Short code",
                         "name": "short",
                         "in": "path",

@@ -47,7 +47,9 @@ func main() {
 	})
 
 	// Swagger endpoint
-	r.Get("/swagger/*", httpSwagger.WrapHandler)
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // URL до swagger.json
+	))
 
 	// Server port
 	port := 8080

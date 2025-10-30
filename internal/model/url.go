@@ -4,6 +4,13 @@ import "time"
 
 // URL represents a shortened URL
 // @name URL
+//
+//	@example {
+//	  "id": 1,
+//	  "original": "https://example.com",
+//	  "short": "abc123",
+//	  "createdAt": "2025-10-30T12:00:00Z"
+//	}
 type URL struct {
 	ID        int       `db:"id"`         // Unique identifier
 	Original  string    `db:"original"`   // Original URL
