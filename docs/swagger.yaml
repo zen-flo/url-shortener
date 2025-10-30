@@ -1,0 +1,100 @@
+basePath: /
+definitions:
+  github_com_zen-flo_url-shortener_internal_model.URL:
+    properties:
+      createdAt:
+        description: Timestamp when URL was created
+        type: string
+      id:
+        description: Unique identifier
+        type: integer
+      original:
+        description: Original URL
+        type: string
+      short:
+        description: Shortened URL
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Simple REST API for shortening URLs.
+  title: URL Shortener API
+  version: "1.0"
+paths:
+  /urls:
+    post:
+      consumes:
+      - application/json
+      description: Generate a short link from the original URL
+      parameters:
+      - description: Original URL
+        in: body
+        name: url
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_zen-flo_url-shortener_internal_model.URL'
+        "400":
+          description: invalid JSON
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create a shortened URL
+      tags:
+      - URLs
+  /urls/{short}:
+    delete:
+      description: Remove a short URL by its code
+      parameters:
+      - description: Short code
+        in: path
+        name: short
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+          schema:
+            type: string
+        "500":
+          description: failed to delete URL
+          schema:
+            type: string
+      summary: Delete a shortened URL
+      tags:
+      - URLs
+    get:
+      description: Retrieve the original URL by short code
+      parameters:
+      - description: Short code
+        in: path
+        name: short
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_zen-flo_url-shortener_internal_model.URL'
+        "404":
+          description: URL not found
+          schema:
+            type: string
+      summary: Get original URL
+      tags:
+      - URLs
+swagger: "2.0"

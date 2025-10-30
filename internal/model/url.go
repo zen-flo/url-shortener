@@ -2,7 +2,8 @@ package model
 
 import "time"
 
-// URL represents a shortened URL entity.
+// URL represents a shortened URL
+// @name URL
 type URL struct {
 	ID        int       `db:"id"`         // Unique identifier
 	Original  string    `db:"original"`   // Original URL
