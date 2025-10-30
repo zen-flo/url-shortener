@@ -2,6 +2,7 @@ package service
 
 import (
 	"crypto/rand"
+	"database/sql"
 	"encoding/base64"
 	"errors"
 	"log"
@@ -26,7 +27,7 @@ func NewURLService(db *sqlx.DB) *URLService {
 }
 
 /*
-CreateShortURL generates a short code, saves it in the database and returns the shortened URL record.
+CreateShortURL generates a unique short code, saves it in the database and returns the shortened URL record.
 */
 func (s *URLService) CreateShortURL(original string) (*model.URL, error) {
 	if original == "" {
@@ -34,12 +35,27 @@ func (s *URLService) CreateShortURL(original string) (*model.URL, error) {
 	}
 
 	short := generateShortCode(6)
+
+	// Ensure uniqueness of short code
+	for {
+		var exists int
+		err := s.DB.Get(&exists, "SELECT COUNT(*) FROM urls WHERE short = ?", short)
+		if err != nil {
+			return nil, err
+		}
+		if exists == 0 {
+			break
+		}
+		short = generateShortCode(6)
+	}
+
 	url := &model.URL{
 		Original:  original,
 		Short:     short,
 		CreatedAt: time.Now(),
 	}
 
+	// Insert into database
 	query := `INSERT INTO urls (original, short, created_at) VALUES (?, ?, ?)`
 	result, err := s.DB.Exec(query, url.Original, url.Short, url.CreatedAt)
 	if err != nil {
@@ -57,11 +73,15 @@ func (s *URLService) CreateShortURL(original string) (*model.URL, error) {
 
 /*
 GetOriginalURL retrieves the original URL by its short code.
+Returns an error if the URL does not exist.
 */
 func (s *URLService) GetOriginalURL(short string) (*model.URL, error) {
 	var url model.URL
 	err := s.DB.Get(&url, "SELECT * FROM urls WHERE short = ?", short)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("URL not found")
+		}
 		return nil, err
 	}
 	return &url, nil
@@ -69,10 +89,21 @@ func (s *URLService) GetOriginalURL(short string) (*model.URL, error) {
 
 /*
 DeleteURL removes a shortened URL from the database by its short code.
+Returns an error if the URL does not exist.
 */
 func (s *URLService) DeleteURL(short string) error {
-	_, err := s.DB.Exec("DELETE FROM urls WHERE short = ?", short)
-	return err
+	result, err := s.DB.Exec("DELETE FROM urls WHERE short = ?", short)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return errors.New("URL not found")
+	}
+	return nil
 }
 
 /*
@@ -83,5 +114,7 @@ func generateShortCode(length int) string {
 	if _, err := rand.Read(b); err != nil {
 		log.Printf("Error generating random bytes: %v", err)
 	}
+
+	// Encode to URL-safe base64 and trim padding
 	return base64.URLEncoding.EncodeToString(b)[:length]
 }
