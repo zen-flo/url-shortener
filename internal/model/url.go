@@ -12,8 +12,8 @@ import "time"
 //	  "createdAt": "2025-10-30T12:00:00Z"
 //	}
 type URL struct {
-	ID        int       `db:"id"`         // Unique identifier
-	Original  string    `db:"original"`   // Original URL
-	Short     string    `db:"short"`      // Shortened URL
-	CreatedAt time.Time `db:"created_at"` // Timestamp when URL was created
+	ID        int       `db:"id" json:"id"`                // Unique identifier
+	Original  string    `db:"original" json:"original"`    // Original URL
+	Short     string    `db:"short" json:"short"`          // Shortened URL
+	CreatedAt time.Time `db:"created_at" json:"createdAt"` // Timestamp when URL was created
 }
