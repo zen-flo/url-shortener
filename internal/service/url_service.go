@@ -5,12 +5,34 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"errors"
+	"github.com/prometheus/client_golang/prometheus"
 	"log"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/zen-flo/url-shortener/internal/model"
 )
+
+var (
+	urlsTotal = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "urls_total",
+			Help: "Total number of shortened URLs created.",
+		},
+	)
+
+	urlsInDB = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Name: "urls_in_db",
+			Help: "Current number of shortened URLs stored in the database.",
+		},
+	)
+)
+
+func init() {
+	prometheus.MustRegister(urlsTotal)
+	prometheus.MustRegister(urlsInDB)
+}
 
 /*
 URLService provides methods for creating, retrieving and deleting shortened URLs.
@@ -23,7 +45,9 @@ type URLService struct {
 NewURLService creates a new instance of URLService with the provided database connection.
 */
 func NewURLService(db *sqlx.DB) *URLService {
-	return &URLService{DB: db}
+	s := &URLService{DB: db}
+	s.UpdateURLCount()
+	return s
 }
 
 /*
@@ -68,6 +92,10 @@ func (s *URLService) CreateShortURL(original string) (*model.URL, error) {
 	}
 	url.ID = int(id)
 
+	// Increase Prometheus counter and update gauge
+	urlsTotal.Inc()
+	s.UpdateURLCount()
+
 	return url, nil
 }
 
@@ -103,7 +131,26 @@ func (s *URLService) DeleteURL(short string) error {
 	if rowsAffected == 0 {
 		return errors.New("URL not found")
 	}
+
+	// Update the gauge after deletion
+	s.UpdateURLCount()
+
 	return nil
+}
+
+/*
+UpdateURLCount updates the Prometheus gauge with the current number of URLs in the database.
+*/
+func (s *URLService) UpdateURLCount() {
+	var count int
+	err := s.DB.Get(&count, "SELECT COUNT(*) FROM urls")
+	if err != nil {
+		if !errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Failed to count URLs: %v", err)
+		}
+		return
+	}
+	urlsInDB.Set(float64(count))
 }
 
 /*
