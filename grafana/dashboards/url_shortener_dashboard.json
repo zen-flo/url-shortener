@@ -1,0 +1,56 @@
+{
+  "id": null,
+  "title": "URL Shortener Metrics",
+  "tags": ["prometheus", "url-shortener"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total URLs Created",
+      "targets": [
+        {
+          "expr": "urls_total",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 6 }
+    },
+    {
+      "type": "stat",
+      "title": "URLs Currently in DB",
+      "targets": [
+        {
+          "expr": "urls_in_db",
+          "refId": "B"
+        }
+      ],
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "URLs Created Over Time",
+      "targets": [
+        {
+          "expr": "increase(urls_total[1m])",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 6 },
+      "lines": true
+    },
+    {
+      "type": "graph",
+      "title": "URLs Count in DB Over Time",
+      "targets": [
+        {
+          "expr": "urls_in_db",
+          "refId": "D"
+        }
+      ],
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 6 }
+    }
+  ]
+}
