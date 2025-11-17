@@ -27,6 +27,7 @@ func NewURLHandler(s *service.URLService) *URLHandler {
 RegisterRoutes registers all URL-related routes to the given router.
 */
 func (h *URLHandler) RegisterRoutes(r chi.Router) {
+	// URL routes
 	r.Post("/urls", h.CreateShortURL)
 	r.Get("/urls/{short}", h.GetOriginalURL)
 	r.Delete("/urls/{short}", h.DeleteURL)

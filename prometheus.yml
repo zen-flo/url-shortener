@@ -4,4 +4,4 @@ global:
 scrape_configs:
   - job_name: 'url-shortener'
     static_configs:
-      - targets: ['app:8080']
+      - targets: ['url-shortener:8080']
