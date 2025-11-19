@@ -34,6 +34,15 @@ func init() {
 	prometheus.MustRegister(urlsInDB)
 }
 
+// URLServiceInterface defines the behavior of the service for working with short URLs.
+// Is used to simplify testing and locking in the handler.
+type URLServiceInterface interface {
+	CreateShortURL(original string) (*model.URL, error)
+	GetOriginalURL(short string) (*model.URL, error)
+	DeleteURL(short string) error
+	UpdateURLCount()
+}
+
 /*
 URLService provides methods for creating, retrieving and deleting shortened URLs.
 */

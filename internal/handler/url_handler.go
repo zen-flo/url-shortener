@@ -13,13 +13,13 @@ import (
 URLHandler provides HTTP endpoints for managing shortened URLs.
 */
 type URLHandler struct {
-	Service *service.URLService
+	Service service.URLServiceInterface
 }
 
 /*
 NewURLHandler creates a new instance of URLHandler.
 */
-func NewURLHandler(s *service.URLService) *URLHandler {
+func NewURLHandler(s service.URLServiceInterface) *URLHandler {
 	return &URLHandler{Service: s}
 }
 
